@@ -13,7 +13,7 @@ import org.springframework.core.io.ByteArrayResource;
 @Service
 public class EmailService {
 
-    @Autowired
+    @Autowired // connect SMTP server
     private JavaMailSender mailSender;
 
     public void sendMail(String to, String subject, String body) {

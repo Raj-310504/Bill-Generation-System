@@ -101,7 +101,7 @@ public class OrderService {
                     "Hi " + order.getCustomerName() +
                             ", payment successful. Amount Rs " +
                             order.getFinalAmount() +
-                            ". Thanks for shopping!";
+                            ". Thanks for shopping with us!";
 
             notificationService.sendSms(order.getMobileNo(), sms);
             notificationService.sendWhatsApp(order.getMobileNo(), sms);
@@ -114,7 +114,8 @@ public class OrderService {
                 order.getPaymentStatus(),
                 paymentStatus.equals("SUCCESS")
                         ? "Order placed successfully"
-                        : "Payment failed. Please try again"
+                        : "Payment failed. Please try again !!"
         );
     }
 }
+
