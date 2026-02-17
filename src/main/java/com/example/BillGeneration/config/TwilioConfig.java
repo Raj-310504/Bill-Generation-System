@@ -1,22 +1,25 @@
 package com.example.BillGeneration.config;
 
+import com.example.BillGeneration.config.properties.TwilioProperties;
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TwilioConfig {
 
-    @Value("${twilio.account.sid}")
-    private String accountSid;
+    private final TwilioProperties twilioProperties;
 
-    @Value("${twilio.auth.token}")
-    private String authToken;
+    public TwilioConfig(TwilioProperties twilioProperties) {
+        this.twilioProperties = twilioProperties;
+    }
 
     @PostConstruct
     public void init() {
-        Twilio.init(accountSid, authToken);
+        Twilio.init(
+                twilioProperties.getAccount().getSid(),
+                twilioProperties.getAuth().getToken()
+        );
         System.out.println("Twilio Initialized");
     }
 }

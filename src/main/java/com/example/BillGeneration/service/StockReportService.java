@@ -1,9 +1,9 @@
 package com.example.BillGeneration.service;
 
+import com.example.BillGeneration.config.properties.AdminProperties;
+import com.example.BillGeneration.config.properties.StockReportProperties;
 import com.example.BillGeneration.entity.Product;
 import com.example.BillGeneration.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +17,22 @@ import java.util.List;
 @Service
 public class StockReportService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final EmailService emailService;
+    private final AdminProperties adminProperties;
+    private final StockReportProperties stockReportProperties;
 
-    @Autowired
-    private EmailService emailService;
-
-    @Value("${admin.email}")
-    private String adminEmail;
-
-    @Value("${stock.report.output-dir:stock-reports}")
-    private String stockReportOutputDir;
+    public StockReportService(
+            ProductRepository productRepository,
+            EmailService emailService,
+            AdminProperties adminProperties,
+            StockReportProperties stockReportProperties
+    ) {
+        this.productRepository = productRepository;
+        this.emailService = emailService;
+        this.adminProperties = adminProperties;
+        this.stockReportProperties = stockReportProperties;
+    }
 
     @Scheduled(cron = "${stock.report.cron:0 0 9 * * *}")
     public void sendDailyStockReport() {
@@ -48,7 +53,7 @@ public class StockReportService {
         saveCsvToLocal(fileName, csvBytes);
 
         emailService.sendMailWithAttachment(
-                adminEmail,
+                adminProperties.getEmail(),
                 "Daily Stock Report",
                 "Please find the daily stock report attached.",
                 fileName,
@@ -58,7 +63,7 @@ public class StockReportService {
 
     private void saveCsvToLocal(String fileName, byte[] fileBytes) {
         try {
-            Path outputDir = Path.of(stockReportOutputDir);
+            Path outputDir = Path.of(stockReportProperties.getOutputDir());
             Files.createDirectories(outputDir);
             Files.write(outputDir.resolve(fileName), fileBytes);
         } catch (IOException ex) {
